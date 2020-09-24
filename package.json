@@ -14,13 +14,17 @@
   "bin": {
     "dactle": "lib/index.js"
   },
-  "files": ["lib/**/*"],
+  "files": [
+    "lib/**/*"
+  ],
   "dependencies": {
-    "@darwinia/api": "^0.1.49",
-    "@darwinia/util": "^0.1.49",
+    "@polkadot/api": "^1.34.1",
+    "@polkadot/keyring": "^3.4.1",
+    "@polkadot/util-crypto": "^3.4.1",
     "ioredis": "^4.16.3",
     "js-yaml": "^3.13.1",
     "node-telegram-bot-api": "^0.50.0",
+    "prompts": "^2.3.2",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
@@ -30,6 +34,7 @@
     "@types/jest": "^26.0.10",
     "@types/js-yaml": "^3.12.5",
     "@types/node-telegram-bot-api": "^0.40.3",
+    "@types/prompts": "^2.0.9",
     "@types/yargs": "^15.0.5",
     "husky": "^4.2.5",
     "ts-jest": "^25.5.1",
@@ -45,8 +50,8 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "git add . && yarn lint && yarn test",
-      "pre-push": "yarn lint"
+      "pre-commit": "git add . && npm run lint && npm run test",
+      "pre-push": "npm run lint"
     }
   }
 }

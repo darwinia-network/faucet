@@ -2,12 +2,9 @@
 import fs from "fs";
 import yargs from "yargs";
 import cmdBot from "./src/bot";
-import { whereisPj } from "@darwinia/util";
 
 // main
 (async () => {
-    const pj = whereisPj();
-
     // enable logger
     if (process.env.LOGGER === undefined) {
         process.env.LOGGER = "INFO";
@@ -17,7 +14,7 @@ import { whereisPj } from "@darwinia/util";
     const _ = yargs
           .usage("dactle <hello@darwinia.network>")
           .help("help").alias("help", "h")
-          .version("version", pj.version).alias("version", "V")
+          .version("version", "0.1").alias("version", "V")
           .command(cmdBot)
           .argv;
 

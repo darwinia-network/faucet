@@ -1,5 +1,5 @@
 import yargs from "yargs";
-import Grammer from "./_grammer";
+import Grammer from "./grammer";
 
 const cmdBot: yargs.CommandModule = {
     builder: (argv: yargs.Argv) => {

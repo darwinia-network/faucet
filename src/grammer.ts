@@ -1,11 +1,14 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { ApiPromise, WsProvider } from "@polkadot/api";
+import { Keyring } from "@polkadot/keyring";
+import { KeyringPair } from "@polkadot/keyring/types";
+import { cryptoWaitReady } from "@polkadot/util-crypto";
 import * as yml from "js-yaml";
-import { API, autoAPI, ExResult } from "@darwinia/api";
-import { Config, log } from "@darwinia/util";
 import TelegramBot from "node-telegram-bot-api"
 import { BotDb, JDb, RDb } from "./db";
+import { Config } from "./config";
 
 /**
  * Constants
@@ -66,8 +69,8 @@ export interface IGrammer {
  * this is the interface of Grammer service
  */
 export interface IGrammerConfig {
-    api: API;
-    config: Config;
+    account: KeyringPair;
+    api: ApiPromise;
     grammer: IGrammer;
     db: BotDb;
 }
@@ -91,11 +94,23 @@ export default class Grammer {
      * @returns {Promise<Grammer>} grammer service
      */
     static async new(
-        grammerConfig = STATIC_GRAMMER_CONFIG,
-        rdb = true,
-        port = 6379,
-        host = "0.0.0.0"
+        grammerConfig: string = STATIC_GRAMMER_CONFIG,
+        rdb: boolean = true,
+        port: number = 6379,
+        host: string = "0.0.0.0"
     ): Promise<Grammer> {
+        await cryptoWaitReady();
+        const config = new Config();
+        const api = await ApiPromise.create({
+            provider: new WsProvider(config.node),
+            types: config.types,
+        });
+        const account = new Keyring({
+            type: "sr25519",
+        }).addFromUri(
+            await config.checkSeed(),
+        );
+
         // revert config if path is empty
         if (grammerConfig === "") {
             grammerConfig = STATIC_GRAMMER_CONFIG;
@@ -111,20 +126,18 @@ export default class Grammer {
         }
 
         // Generate API
-        const api = await autoAPI();
-        const config = new Config();
         const grammer: IGrammer = yml.safeLoad(fs.readFileSync(grammerConfig, "utf8")) as IGrammer;
         let db: BotDb;
         if (rdb) {
             db = new RDb(port, host);
         } else {
             db = new JDb(
-                path.resolve(config.path.root, "cache/boby.json"),
+                path.resolve(os.homedir(), ".bot/boby.json"),
                 grammer.faucet.config.supply,
             );
         }
 
-        return new Grammer({ api, config, grammer, db });
+        return new Grammer({ account, api, db, grammer });
     }
 
     static checkMsg(msg: TelegramBot.Message): boolean {
@@ -140,14 +153,14 @@ export default class Grammer {
         return true;
     }
 
-    protected config: Config;
-    private api: API;
     private grammer: IGrammer;
     private db: BotDb;
+    private api: ApiPromise;
+    private account: KeyringPair;
 
     constructor(conf: IGrammerConfig) {
+        this.account = conf.account;
         this.api = conf.api;
-        this.config = conf.config;
         this.grammer = conf.grammer;
         this.db = conf.db;
     }
@@ -163,7 +176,7 @@ export default class Grammer {
 
         // start bot
         const bot = new TelegramBot(key, { polling: true });
-        bot.on("polling_error", (msg) => log.err(msg));
+        bot.on("polling_error", (msg) => console.error(msg));
         bot.onText(/^\/\w+/, async (msg) => {
             if (msg.text === undefined) {
                 return false;
@@ -202,8 +215,8 @@ export default class Grammer {
     private async locker() {
         const that = this;
         setInterval(async () => {
-            const balance = await that.api.getBalance(that.api.account.address);
-            if (Number.parseInt(balance, 10) < 1000 * 1000000000) {
+            const balance = await that.api.query.system.account(this.account.address);
+            if (Number.parseInt(balance.data.free.toString(), 10) < 1000 * 1000000000) {
                 fs.writeFileSync(LOCKER, "");
             } else {
                 if (fs.existsSync(LOCKER)) {
@@ -273,7 +286,7 @@ export default class Grammer {
                 return this.grammer.faucet.only;
             }
         } catch (e) {
-            log.err(e);
+            console.error(e);
             return this.grammer.faucet.only;
         }
 
@@ -303,7 +316,7 @@ export default class Grammer {
         }
 
         const addr = matches[2];
-        log.trace(`${new Date()} trying to tansfer to ${addr}`);
+        console.trace(`${new Date()} trying to tansfer to ${addr}`);
         if (addr.length !== 48) {
             return this.grammer.faucet.length;
         } else if (!addr.startsWith("5")) {
@@ -315,7 +328,7 @@ export default class Grammer {
         // check addr
         const received: boolean = await this.db.hasReceived(addr);
         if (received) {
-            log.trace(`${new Date()}: ${addr} has already reviced the airdrop`)
+            console.trace(`${new Date()}: ${addr} has already reviced the airdrop`)
             return this.grammer.faucet.received;
         }
 
@@ -326,7 +339,7 @@ export default class Grammer {
         );
 
         // check if tx failed
-        let ex: ExResult | null = null;
+        let hash: string = "";
         try {
             // /// **Ugly FIX**
             // /// Check if the BUG comes from the ws connection problem
@@ -334,17 +347,16 @@ export default class Grammer {
             // this.api = await autoAPI();
 
             /// Transfer to account
-            ex = await this.api.transfer(
+            hash = (await this.api.tx.balances.transfer(
                 addr, this.grammer.faucet.config.amount * 1000000000
-            );
+            ).signAndSend(this.account)).hash.toString();
         } catch (err) {
-            log.err(err);
+            console.error(err);
             return this.grammer.faucet.failed;
         }
 
         // return exHash
-        if (ex && (ex as ExResult).isOk) {
-            const hash = (ex as ExResult).exHash;
+        if (hash !== "") {
             await this.db.addAddr(addr);
             await this.db.burnSupply(date, this.grammer.faucet.config.supply);
             await this.db.lastDrop(msg.from.id, new Date().getTime())
@@ -358,7 +370,7 @@ export default class Grammer {
         await bot.deleteMessage(
             msg.chat.id, msg.message_id.toString(),
         ).catch((_: any) => {
-            log.warn(`doesn't have the access for deleting messages`);
+            console.warn(`doesn't have the access for deleting messages`);
         });
     }
 }
