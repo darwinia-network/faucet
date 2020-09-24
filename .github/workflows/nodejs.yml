@@ -14,39 +14,6 @@ jobs:
     strategy:
       matrix:
         node-version: [10.x, 11.x, 12.x]
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - id: yarn_cache_dir
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn_cache_dir.outputs.dir }}
-          key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.node-version }}-yarn-
-
-      - run: yarn && yarn lint && yarn build
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: lib-${{ matrix.os }}
-          path: packages/*/lib/
-
-  test:
-    needs: build
-    strategy:
-      matrix:
-        node-version: [10.x, 11.x, 12.x]
-        os: [ubuntu-latest]
     runs-on: ubuntu-latest
     services:
       redis:
@@ -60,26 +27,15 @@ jobs:
           - 6379:6379
     steps:
       - uses: actions/checkout@v2
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-
-      - id: yarn_cache_dir
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn_cache_dir.outputs.dir }}
-          key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.node-version }}-yarn-
-
-      - run: yarn
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: lib-${{ matrix.os }}
-
-      - run: yarn test
+      - name: Deps
+        run: yarn
+      - name: Lint
+        run: yarn lint
+      - name: Build
+        run: yarn build
+      - name: Test
+        run: yarn test

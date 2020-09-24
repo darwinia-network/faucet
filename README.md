@@ -1,8 +1,8 @@
-# @darwinia/dj
+# @darwinia/dactle
 
-[![Node.js CI][workflow-badge]][github]
+[![nodejs][workflow-badge]][github]
 
-darwinia.js command-line tools
+Darwinia telegram bot
 
 ## Usage
 
@@ -18,7 +18,7 @@ Input <kbd>dactle</kbd> to your command-line.
 dactle <hello@darwinia.network>
 
 Commands:
-  dj bot <key>                Run the bot
+  index.ts bot <key> [config]  start darwinia telegram bot
 
 Options:
   --help, -h     Show help                                             [boolean]
@@ -29,5 +29,5 @@ Options:
 
 GPL-3.0
 
-[github]: https://github.com/darwinia-network/darwinia.js
+[github]: https://github.com/darwinia-network/telegram-bot
 [workflow-badge]: https://github.com/darwinia-network/telegram-bot/workflows/nodejs/badge.svg
