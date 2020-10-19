@@ -316,7 +316,7 @@ export default class Grammer {
         }
 
         const addr = matches[2];
-        console.trace(`${new Date()} trying to tansfer to ${addr}`);
+        console.log(`${new Date()} trying to tansfer to ${addr}`);
         if (addr.length !== 48) {
             return this.grammer.faucet.length;
         } else if (!addr.startsWith("5")) {
@@ -341,15 +341,12 @@ export default class Grammer {
         // check if tx failed
         let hash: string = "";
         try {
-            // /// **Ugly FIX**
-            // /// Check if the BUG comes from the ws connection problem
-            // this.api._.disconnect();
-            // this.api = await autoAPI();
-
             /// Transfer to account
-            hash = (await this.api.tx.balances.transfer(
+            const ex = this.api.tx.balances.transfer(
                 addr, this.grammer.faucet.config.amount * 1000000000
-            ).signAndSend(this.account)).hash.toString();
+            );
+            await ex.signAndSend(this.account);
+            hash = ex.hash.toString();
         } catch (err) {
             console.error(err);
             return this.grammer.faucet.failed;
