@@ -316,7 +316,7 @@ export default class Grammer {
         }
 
         const addr = matches[2];
-        console.trace(`${new Date()} trying to tansfer to ${addr}`);
+        console.log(`${new Date()} trying to tansfer to ${addr}`);
         if (addr.length !== 48) {
             return this.grammer.faucet.length;
         } else if (!addr.startsWith("5")) {
