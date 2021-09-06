@@ -2,7 +2,7 @@
   "indent": [true, "spaces", 4],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
+    "baseUrl": "..",
     "declaration": true,
     "esModuleInterop": true,
     "outDir": "lib",
@@ -14,6 +14,9 @@
     "skipLibCheck": true,
     "target": "es6"
   },
-  "include": ["index.ts", "src/**/*"],
+  "include": [
+    "index.ts",
+    "telegram-bot/src/**/*"
+  ],
   "exclude": ["node_modules"]
 }
