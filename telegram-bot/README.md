@@ -24,10 +24,11 @@ Options:
   --help, -h     Show help                                             [boolean]
   --version, -V  Show version number                                   [boolean]
 ```
-  
+
 ## LICENSE
 
 GPL-3.0
 
 [github]: https://github.com/darwinia-network/telegram-bot
+
 [workflow-badge]: https://github.com/darwinia-network/telegram-bot/workflows/nodejs/badge.svg

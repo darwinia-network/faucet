@@ -1,10 +1,15 @@
 {
   "extends": "tslint:recommended",
   "rules": {
-    "curly": [true, "ignore-same-line"],
+    "curly": [
+      true,
+      "ignore-same-line"
+    ],
     "max-classes-per-file": false,
     "max-line-length": {
-      "options": [120]
+      "options": [
+        120
+      ]
     },
     "new-parens": true,
     "no-arg": true,
