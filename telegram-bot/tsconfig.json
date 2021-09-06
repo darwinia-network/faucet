@@ -2,7 +2,7 @@
   "indent": [
     true,
     "spaces",
-    4
+    2
   ],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
