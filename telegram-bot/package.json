@@ -46,12 +46,5 @@
     "build": "tsc --strict && rm -rf lib/src/static && cp -r src/static lib/src/static",
     "lint": "tsc --noEmit --strict && tslint --project tsconfig.json",
     "test": "jest --forceExit --detectOpenHandles"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "git add . && npm run lint && npm run test",
-      "pre-push": "npm run lint"
-    }
   }
 }
