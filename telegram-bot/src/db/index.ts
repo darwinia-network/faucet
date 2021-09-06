@@ -3,7 +3,7 @@ import BotDb from "./schema";
 import RDb from "./redis";
 
 export {
-    BotDb,
-    JDb,
-    RDb,
+  BotDb,
+  JDb,
+  RDb,
 }
