@@ -2,7 +2,7 @@ import {RDb} from "../src/db";
 
 // Addrs
 test("Test addrs", async (done: jest.DoneCallback) => {
-  const redis = new RDb("6379");
+  const redis = new RDb(6379);
   const addrs = [
     "5CRABDGPE9XKM4TSZneAG3vvyPLpiZj3Mw4fnfSYVqsVRDit",
     "5CRAB3QUL56xNQKUW16FrHEQo3B7giiNT9yKCEfUPfUMf12f",
