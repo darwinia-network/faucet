@@ -126,7 +126,7 @@ export default class Grammer {
     }
 
     // Generate API
-    const grammer: IGrammer = yml.safeLoad(fs.readFileSync(grammerConfig, "utf8")) as IGrammer;
+    const grammer: IGrammer = yml.load(fs.readFileSync(grammerConfig, "utf8")) as IGrammer;
     let db: BotDb;
     if (rdb) {
       db = new RDb(port, host);
