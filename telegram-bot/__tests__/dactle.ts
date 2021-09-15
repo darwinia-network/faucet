@@ -19,7 +19,7 @@ test("Test addrs", async (done: jest.DoneCallback) => {
     expect(await redis.hasReceived(addrs[i])).toEqual(true);
   }
 
-  done();
+  redis.closeInstance();
 });
 
 // User Interval
@@ -36,8 +36,7 @@ test("Test users", async (done: jest.DoneCallback) => {
   for (const i in users) {
     expect(await redis.nextDrop(users[i], 24)).toEqual(23)
   }
-
-  done();
+  redis.closeInstance();
 });
 
 // Supplies
@@ -59,5 +58,5 @@ test("Test Supply", async (done: jest.DoneCallback) => {
     await redis.burnSupply(date, 400)
   }
   expect(await redis.hasSupply(date, 400)).toEqual(false);
-  done()
+  redis.closeInstance();
 });

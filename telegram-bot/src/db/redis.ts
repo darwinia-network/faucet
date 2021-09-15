@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import Redis, {Callback, Ok} from "ioredis";
 import BotDb from "./schema";
 
 /// Table
@@ -9,7 +9,7 @@ const SUPPLY = "_supply"
 export class RDb extends BotDb {
   public _: Redis.Redis;
 
-  constructor(port = 6379, host = "127.0.0.1") {
+  constructor(port = 6379, host = "0.0.0.0") {
     super();
     this._ = new Redis(port, host);
   }
@@ -58,6 +58,10 @@ export class RDb extends BotDb {
     } else {
       this._.hmset(SUPPLY, [date, supply]);
     }
+  }
+
+  public closeInstance(callback?: Redis.Callback<Ok>) {
+    this._.quit(callback)
   }
 }
 
