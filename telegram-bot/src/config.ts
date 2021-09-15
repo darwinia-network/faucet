@@ -9,33 +9,33 @@ import rawTj from "./static/types.json";
 // Interfaces
 // Ethereum Config
 interface IEthConfig {
-    RPC_SERVER: string;
-    START_BLOCK_NUMBER: number;
-    CONTRACT: {
-        RING: {
-            address: string;
-            burnAndRedeemTopics: string;
-        },
-        KTON: {
-            address: string;
-            burnAndRedeemTopics: string;
-        },
-        BANK: {
-            address: string;
-            burnAndRedeemTopics: string;
-        }
-        ISSUING: {
-            address: string;
-        }
+  RPC_SERVER: string;
+  START_BLOCK_NUMBER: number;
+  CONTRACT: {
+    RING: {
+      address: string;
+      burnAndRedeemTopics: string;
+    },
+    KTON: {
+      address: string;
+      burnAndRedeemTopics: string;
+    },
+    BANK: {
+      address: string;
+      burnAndRedeemTopics: string;
     }
+    ISSUING: {
+      address: string;
+    }
+  }
 }
 
 export interface IConfig {
-    node: string;
-    relayer: string;
-    seed: string;
-    shadow: string;
-    eth: IEthConfig;
+  node: string;
+  relayer: string;
+  seed: string;
+  shadow: string;
+  eth: IEthConfig;
 }
 
 /**
@@ -46,105 +46,105 @@ export interface IConfig {
  * @property {String} seed - darwinia account seed
  */
 export class Config {
-    static warn(config: Config) {
-        if (config.shadow === "") {
-            console.warn([
-                "shadow address has not been configured, ",
-                "edit `~/.darwinia/config.json` if it is required",
-            ].join(""));
-        }
-
-        if (config.node === "") {
-            console.error("darwinia node has not been configured");
-            process.exit(0);
-        }
+  static warn(config: Config) {
+    if (config.shadow === "") {
+      console.warn([
+        "shadow address has not been configured, ",
+        "edit `~/.darwinia/config.json` if it is required",
+      ].join(""));
     }
 
-    /// Load and merge config from file
-    static load(p: string, defaultConfig: Record<string, any>): Record<string, any> {
-        let json: Record<string, any> = defaultConfig;
-        if (!fs.existsSync(p)) {
-            fs.writeFileSync(p, JSON.stringify(json, null, 2));
-        } else {
-            const cur = Object.assign(json, JSON.parse(fs.readFileSync(p, "utf8")));
-            fs.writeFileSync(p, JSON.stringify(cur, null, 2));
-            json = cur;
-        }
+    if (config.node === "") {
+      console.error("darwinia node has not been configured");
+      process.exit(0);
+    }
+  }
 
-        return json
+  /// Load and merge config from file
+  static load(p: string, defaultConfig: Record<string, any>): Record<string, any> {
+    let json: Record<string, any> = defaultConfig;
+    if (!fs.existsSync(p)) {
+      fs.writeFileSync(p, JSON.stringify(json, null, 2));
+    } else {
+      const cur = Object.assign(json, JSON.parse(fs.readFileSync(p, "utf8")));
+      fs.writeFileSync(p, JSON.stringify(cur, null, 2));
+      json = cur;
     }
 
-    public eth: IEthConfig;
-    public node: string;
-    public path: string;
-    public relayer: string;
-    public shadow: string;
-    public types: Record<string, any>;
-    private seed: string;
+    return json
+  }
 
-    constructor() {
-        const home = os.homedir();
-        const root = path.resolve(home, ".darwinia");
-        const conf = path.resolve(root, "config.json");
-        const types = path.resolve(root, "types.json");
+  public eth: IEthConfig;
+  public node: string;
+  public path: string;
+  public relayer: string;
+  public shadow: string;
+  public types: Record<string, any>;
+  private seed: string;
 
-        // Init pathes
-        this.path = conf;
+  constructor() {
+    const home = os.homedir();
+    const root = path.resolve(home, ".darwinia");
+    const conf = path.resolve(root, "config.json");
+    const types = path.resolve(root, "types.json");
 
-        // Check root
-        if (!fs.existsSync(root)) {
-            fs.mkdirSync(root, { recursive: true });
-        }
+    // Init pathes
+    this.path = conf;
 
-        const cj = Config.load(conf, rawCj);
-        this.node = cj.node;
-        this.relayer = cj.relayer;
-        this.seed = cj.seed;
-        this.shadow = cj.shadow;
-        this.eth = cj.eth;
-        this.types = Config.load(types, rawTj);
-
-        // Warn config
-        Config.warn(this);
+    // Check root
+    if (!fs.existsSync(root)) {
+      fs.mkdirSync(root, {recursive: true});
     }
 
-    /**
-     * Raise a prompt if seed not exists
-     */
-    public async checkSeed(): Promise<string> {
-        if (this.seed !== "") {
-            return this.seed;
-        }
+    const cj = Config.load(conf, rawCj);
+    this.node = cj.node;
+    this.relayer = cj.relayer;
+    this.seed = cj.seed;
+    this.shadow = cj.shadow;
+    this.eth = cj.eth;
+    this.types = Config.load(types, rawTj);
 
-        const ans = await prompts({
-            type: "text",
-            name: "seed",
-            message: "Please input your darwinia seed:",
-        }, {
-            onCancel: () => {
-                console.error("You can fill the seed field in `~/.darwinia/config.json` manually");
-                process.exit(0);
-            }
-        });
+    // Warn config
+    Config.warn(this);
+  }
 
-        const curConfig: IConfig = JSON.parse(fs.readFileSync(this.path, "utf8"));
-        const seed = String(ans.seed).trim();
-        curConfig.seed = seed;
-        this.seed = seed;
-        fs.writeFileSync(
-            this.path,
-            JSON.stringify(curConfig, null, 2)
-        );
-
-        return seed;
+  /**
+   * Raise a prompt if seed not exists
+   */
+  public async checkSeed(): Promise<string> {
+    if (this.seed !== "") {
+      return this.seed;
     }
 
-    /**
-     * edit dj.json
-     */
-    public async edit(): Promise<void> {
-        child_process.spawnSync("vi", [this.path], {
-            stdio: "inherit",
-        });
-    }
+    const ans = await prompts({
+      type: "text",
+      name: "seed",
+      message: "Please input your darwinia seed:",
+    }, {
+      onCancel: () => {
+        console.error("You can fill the seed field in `~/.darwinia/config.json` manually");
+        process.exit(0);
+      }
+    });
+
+    const curConfig: IConfig = JSON.parse(fs.readFileSync(this.path, "utf8"));
+    const seed = String(ans.seed).trim();
+    curConfig.seed = seed;
+    this.seed = seed;
+    fs.writeFileSync(
+      this.path,
+      JSON.stringify(curConfig, null, 2)
+    );
+
+    return seed;
+  }
+
+  /**
+   * edit dj.json
+   */
+  public async edit(): Promise<void> {
+    child_process.spawnSync("vi", [this.path], {
+      stdio: "inherit",
+    });
+  }
 }

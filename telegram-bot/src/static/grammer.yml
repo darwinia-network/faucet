@@ -20,7 +20,7 @@ help: |
 # `book` command
 book: |
   Our handbook is in progress now, looking forward to your contributions!
-  
+
   https://darwinia-network.github.io/the-darwinia-book/
 dev: |
   Have you ever heard the qoute, unlimited programming in an eyeful?
@@ -34,10 +34,10 @@ talk: |
   https://www.crowdcast.io/e/web3-builders-darwinia
 # `more` command
 more: |
-  More features can`t wait to see ya! 
-  
+  More features can`t wait to see ya!
+
   https://github.com/darwinia-network/darwinia.js
-  
+
   I'll see you on the dark side of the moon :-P
 # `about` command
 about: |
@@ -45,7 +45,7 @@ about: |
 # `faucet` command
 faucet:
   only: >-
-    You and I, all we got is each other in this lonesome town, 
+    You and I, all we got is each other in this lonesome town,
     but would you mind to join https://t.me/DarwiniaNetwork first and talk to me later?
   invite: |
     Needs some CRING? Follow me: https://t.me/DarwiniaFaucet
@@ -61,11 +61,11 @@ faucet:
     My CRING has run out ;(, would anybody send me some?
   succeed: |
     Congratulations! the transaction is pending, take a look at
-    
+
     https://crab.subscan.io/extrinsic/${hash}
   interval: |
     It seems that you have already got the CRING of today, just tell me your story.
-    
+
     (You can call me after ${hour} hrs
   supply: |
     We have run out our faucet supply today, trigger your clock at tomorrow morning

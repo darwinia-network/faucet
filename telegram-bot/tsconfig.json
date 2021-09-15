@@ -1,5 +1,9 @@
 {
-  "indent": [true, "spaces", 4],
+  "indent": [
+    true,
+    "spaces",
+    2
+  ],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "baseUrl": "..",
@@ -18,5 +22,7 @@
     "index.ts",
     "telegram-bot/src/**/*"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
