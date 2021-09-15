@@ -1,5 +1,5 @@
 {
-  "node": "wss://crab.darwinia.network",
+  "node": "wss://pangolin-rpc.darwinia.network",
   "relayer": "",
   "seed": "",
   "shadow": "https://shadow.darwinia.network",

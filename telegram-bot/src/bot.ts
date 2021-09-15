@@ -1,5 +1,6 @@
 import yargs from "yargs";
 import Grammer from "./grammer";
+// import Grammer from "./brain"
 
 const cmdBot: yargs.CommandModule = {
   builder: (argv: yargs.Argv) => {

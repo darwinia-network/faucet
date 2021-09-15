@@ -48,23 +48,23 @@ faucet:
     You and I, all we got is each other in this lonesome town,
     but would you mind to join https://t.me/DarwiniaNetwork first and talk to me later?
   invite: |
-    Needs some CRING? Follow me: https://t.me/DarwiniaFaucet
+    Needs some PRING? Follow me: https://t.me/DarwiniaFaucet
   invalid: |
     To be or not to be, that is the question.
   empty: |
-    The airdrop has just sent to the air ;)
+    You can send /faucet + PANGOLIN_ADDRESS to get some token for test (OWNS NO VALUE)
   prefix: |
     (The secret of generating a lucky address is...wubalubadubdub
   length: |
     The length of my crab address is 48, what about yours?
   failed: |
-    My CRING has run out ;(, would anybody send me some?
+    My PRING has run out ;(, would anybody send me some?
   succeed: |
     Congratulations! the transaction is pending, take a look at
 
-    https://crab.subscan.io/extrinsic/${hash}
+    https://pangolin.subscan.io/extrinsic/${hash}
   interval: |
-    It seems that you have already got the CRING of today, just tell me your story.
+    It seems that you have already got the PRING of today, just tell me your story.
 
     (You can call me after ${hour} hrs
   supply: |

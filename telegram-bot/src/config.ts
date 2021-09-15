@@ -84,7 +84,7 @@ export class Config {
 
   constructor() {
     const home = os.homedir();
-    const root = path.resolve(home, ".darwinia");
+    const root = path.resolve(home, ".darwinia/faucet");
     const conf = path.resolve(root, "config.json");
     const types = path.resolve(root, "types.json");
 
