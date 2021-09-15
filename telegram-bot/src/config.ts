@@ -75,19 +75,24 @@ export class Config {
       return this.seed;
     }
 
-    const ans = await prompts({
-      type: "text",
-      name: "seed",
-      message: "Please input your darwinia seed:",
-    }, {
-      onCancel: () => {
-        console.error("You can fill the seed field in `~/.darwinia/config.json` manually");
-        process.exit(0);
-      }
-    });
+    let seed;
+    if (process.env.DACTLE_SEED) {
+      seed = process.env.DACTLE_SEED;
+    } else {
+      const ans = await prompts({
+        type: "text",
+        name: "seed",
+        message: "Please input your darwinia seed:",
+      }, {
+        onCancel: () => {
+          console.error("You can fill the seed field in `~/.darwinia/faucet/config.json` manually");
+          process.exit(0);
+        }
+      });
+      seed = String(ans.seed).trim();
+    }
 
     const curConfig: IConfig = JSON.parse(fs.readFileSync(this.path, "utf8"));
-    const seed = String(ans.seed).trim();
     curConfig.seed = seed;
     this.seed = seed;
     fs.writeFileSync(
