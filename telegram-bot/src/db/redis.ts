@@ -9,7 +9,7 @@ const SUPPLY = "_supply"
 export class RDb extends BotDb {
   public _: Redis.Redis;
 
-  constructor(port = 6379, host = "0.0.0.0") {
+  constructor(port = 6379, host = "127.0.0.1") {
     super();
     this._ = new Redis(port, host);
   }
