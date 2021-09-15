@@ -6,54 +6,19 @@ import prompts from "prompts";
 import rawCj from "./static/config.json";
 import rawTj from "./static/types.json";
 
-// Interfaces
-// Ethereum Config
-interface IEthConfig {
-  RPC_SERVER: string;
-  START_BLOCK_NUMBER: number;
-  CONTRACT: {
-    RING: {
-      address: string;
-      burnAndRedeemTopics: string;
-    },
-    KTON: {
-      address: string;
-      burnAndRedeemTopics: string;
-    },
-    BANK: {
-      address: string;
-      burnAndRedeemTopics: string;
-    }
-    ISSUING: {
-      address: string;
-    }
-  }
-}
-
 export interface IConfig {
   node: string;
-  relayer: string;
   seed: string;
-  shadow: string;
-  eth: IEthConfig;
 }
 
 /**
  * darwinia.js config
  *
- * @property {IConfigPath} path - darwinia config paths
  * @property {String} node - darwinia node address
  * @property {String} seed - darwinia account seed
  */
 export class Config {
   static warn(config: Config) {
-    if (config.shadow === "") {
-      console.warn([
-        "shadow address has not been configured, ",
-        "edit `~/.darwinia/config.json` if it is required",
-      ].join(""));
-    }
-
     if (config.node === "") {
       console.error("darwinia node has not been configured");
       process.exit(0);
@@ -74,11 +39,8 @@ export class Config {
     return json
   }
 
-  public eth: IEthConfig;
   public node: string;
   public path: string;
-  public relayer: string;
-  public shadow: string;
   public types: Record<string, any>;
   private seed: string;
 
@@ -98,10 +60,7 @@ export class Config {
 
     const cj = Config.load(conf, rawCj);
     this.node = cj.node;
-    this.relayer = cj.relayer;
     this.seed = cj.seed;
-    this.shadow = cj.shadow;
-    this.eth = cj.eth;
     this.types = Config.load(types, rawTj);
 
     // Warn config

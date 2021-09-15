@@ -153,9 +153,13 @@ export default class Grammer {
       }
 
       // reply
+      const replayMsg = await this.reply(bot, msg, match[0].slice(1));
+      if (replayMsg === undefined) {
+        return;
+      }
       const sentMsg = await bot.sendMessage(
         msg.chat.id,
-        await this.reply(bot, msg, match[0].slice(1)),
+        replayMsg,
         {
           reply_to_message_id: msg.message_id,
         }
@@ -201,28 +205,14 @@ export default class Grammer {
     bot: TelegramBot,
     msg: TelegramBot.Message,
     cmd: string
-  ): Promise<string> {
+  ): Promise<string | undefined> {
     switch (cmd) {
-      case "book":
-        return this.grammer.book;
-      case "docs":
-        return this.grammer.docs;
-      case "dev":
-        return this.grammer.dev;
-      case "talk":
-        return this.grammer.talk;
-      case "more":
-        return this.grammer.more;
-      case "about":
-        return this.grammer.about;
       case "faucet":
         if (fs.existsSync(LOCKER)) {
           return this.grammer.faucet.failed;
         } else {
           return await this.transfer(bot, msg);
         }
-      default:
-        return this.grammer.help;
     }
   }
 
@@ -240,28 +230,6 @@ export default class Grammer {
     ) {
       return this.grammer.faucet.invalid;
     }
-
-    // Check if user in channel @DarwiniaFaucet
-    // if (msg.chat.id !== -1001364443637) {
-    //   return this.grammer.faucet.invite;
-    // }
-
-    // Check if user in channel @DarwiniaNetwork
-    // try {
-    //   const res = await bot.getChatMember("@DarwiniaNetwork", msg.from.id.toString());
-    //   const status: string = res.status;
-    //   if (
-    //     status !== "creator" &&
-    //     status !== "member" &&
-    //     status !== "administrator"
-    //   ) {
-    //     return this.grammer.faucet.only;
-    //   }
-    // } catch (e) {
-    //   console.error(e);
-    //   return this.grammer.faucet.only;
-    // }
-
 
     // Get addr
     const matches = msg.text.match(/\/(\w+)\s+(\S+)/);
@@ -289,13 +257,11 @@ export default class Grammer {
       );
     }
 
-    console.log(`${new Date()} trying to tansfer to ${addr}`);
+    console.log(`${new Date()} trying to transfer to ${addr}`);
     if (addr.length !== 48) {
       return this.grammer.faucet.length;
     } else if (!addr.startsWith("2")) {
       return this.grammer.faucet.prefix;
-    } else if (!addr.match(/CRAB/g)) {
-      // return this.grammer.faucet.address;
     }
 
     // check addr
