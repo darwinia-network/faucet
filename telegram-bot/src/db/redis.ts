@@ -59,10 +59,6 @@ export class RDb extends BotDb {
       this._.hmset(SUPPLY, [date, supply]);
     }
   }
-
-  public closeInstance(callback?: Redis.Callback<Ok>) {
-    this._.quit(callback)
-  }
 }
 
 export default RDb;
