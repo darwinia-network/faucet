@@ -130,6 +130,16 @@ export default class Grammer {
     return new Grammer({account, api, db, grammer});
   }
 
+  private token(typedToken: string): string {
+    if (!!typedToken)
+      return typedToken;
+    if (process.env.TELEGRAM_BOT_TOKEN) {
+      return process.env.TELEGRAM_BOT_TOKEN;
+    }
+    console.error("The telegram-bot token is required.");
+    process.exit(1);
+  }
+
   /**
    * serve grammer with specfic key
    *
@@ -140,7 +150,8 @@ export default class Grammer {
     this.locker();
 
     // start bot
-    const bot = new TelegramBot(token, {polling: true});
+    const botToken = this.token(token);
+    const bot = new TelegramBot(botToken, {polling: true});
     bot.on("polling_error", (msg) => console.error(msg));
     bot.onText(/^\/\w+/, async (msg) => {
       if (msg.text === undefined) {

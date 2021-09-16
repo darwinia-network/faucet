@@ -4,9 +4,9 @@ import Grammer from "./grammer";
 
 const cmdBot: yargs.CommandModule = {
   builder: (argv: yargs.Argv) => {
-    return argv.positional("key", {
+    return argv.positional("token", {
       alias: "k",
-      describe: "the telegram-bot key",
+      describe: "the telegram-bot token",
       default: "",
       type: "string",
     }).positional("config", {
@@ -16,7 +16,7 @@ const cmdBot: yargs.CommandModule = {
       type: "string",
     });
   },
-  command: "bot <key> [config]",
+  command: "bot [token] [config]",
   describe: "start darwinia telegram bot",
   handler: async (args: yargs.Arguments) => {
     const g = await Grammer.new((args.config as string));

@@ -58,10 +58,10 @@ export class Config {
       fs.mkdirSync(root, {recursive: true});
     }
 
+    this.types = Config.load(types, rawTj);
     const cj = Config.load(conf, rawCj);
     this.node = cj.node;
-    this.seed = cj.seed;
-    this.types = Config.load(types, rawTj);
+    this.seed = process.env.DACTLE_SEED ? process.env.DACTLE_SEED : cj.seed;
 
     // Warn config
     Config.warn(this);
