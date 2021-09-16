@@ -6,29 +6,23 @@ Darwinia telegram bot
 
 ## Usage
 
-Install `dactle` globally
+### Use environments
 
-```shell
-yarn global add @darwinia/dactle
+```bash
+export TELEGRAM_BOT_TOKEN=19847361:48348abde
+export DACTLE_SEED=0x93827abcdef
+./dactle.sh bot
 ```
 
-Input <kbd>dactle</kbd> to your command-line.
+### Use command
 
-```text
-dactle <hello@darwinia.network>
-
-Commands:
-  index.ts bot <key> [config]  start darwinia telegram bot
-
-Options:
-  --help, -h     Show help                                             [boolean]
-  --version, -V  Show version number                                   [boolean]
+```bash
+./dactle.sh bot [TOKEN]
 ```
 
 ## LICENSE
 
 GPL-3.0
 
-[github]: https://github.com/darwinia-network/telegram-bot
+[github]: https://github.com/darwinia-network/faucet/telegram-bot
 
-[workflow-badge]: https://github.com/darwinia-network/telegram-bot/workflows/nodejs/badge.svg

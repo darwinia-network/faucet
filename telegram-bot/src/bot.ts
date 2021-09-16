@@ -20,7 +20,7 @@ const cmdBot: yargs.CommandModule = {
   describe: "start darwinia telegram bot",
   handler: async (args: yargs.Arguments) => {
     const g = await Grammer.new((args.config as string));
-    g.run((args.key as string));
+    g.run((args.token as string));
   }
 }
 
