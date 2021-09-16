@@ -7,22 +7,14 @@ import {KeyringPair} from "@polkadot/keyring/types";
 import {cryptoWaitReady} from "@polkadot/util-crypto";
 import * as yml from "js-yaml";
 import TelegramBot from "node-telegram-bot-api"
-import {BotDb, JDb, RDb} from "./db";
 import {Config} from "./config";
+import {BotDb, JDb, RDb} from "./db";
 
 /**
  * Constants
  */
 const LOCKER = path.resolve(os.tmpdir(), "faucet.lock");
 const STATIC_GRAMMER_CONFIG: string = path.resolve(__dirname, "static/grammer.yml");
-
-/**
- * command arguments
- */
-export interface ICommandArgs {
-  ident: string;
-  message: string;
-}
 
 /**
  * fault grammers - the config below will generate from `grammer.yml`
@@ -65,6 +57,7 @@ export interface IGrammer {
   faucet: IFaucetGrammers;
 }
 
+
 /**
  * this is the interface of Grammer service
  */
@@ -75,29 +68,25 @@ export interface IGrammerConfig {
   db: BotDb;
 }
 
-/**
- * Grammer Service
- *
- * @property {Config} config - ~/.darwinia/config.json
- * @property {Number} port - port of grammer server
- * @property {API} api - darwinia api
- * @property {IGrammerCommandsConfig} commands - commands config from `dj.json`
- * @property {IGrammer} grammer - grammer config from `grammer.yml`
- */
 export default class Grammer {
-  /**
-   * Async init grammer service
-   *
-   * @param {string} grammerConfig - the path of grammer.yml
-   * @param {number} port          - redis port
-   * @param {string} host          - redis host
-   * @returns {Promise<Grammer>} grammer service
-   */
+
+  private grammer: IGrammer;
+  private db: BotDb;
+  private api: ApiPromise;
+  private account: KeyringPair;
+
+  constructor(conf: IGrammerConfig) {
+    this.account = conf.account;
+    this.api = conf.api;
+    this.grammer = conf.grammer;
+    this.db = conf.db;
+  }
+
   static async new(
     grammerConfig: string = STATIC_GRAMMER_CONFIG,
-    rdb: boolean = true,
+    rdb: boolean = false,
     port: number = 6379,
-    host: string = "0.0.0.0"
+    host: string = "127.0.0.1"
   ): Promise<Grammer> {
     await cryptoWaitReady();
     const config = new Config();
@@ -127,12 +116,13 @@ export default class Grammer {
 
     // Generate API
     const grammer: IGrammer = yml.load(fs.readFileSync(grammerConfig, "utf8")) as IGrammer;
+
     let db: BotDb;
     if (rdb) {
       db = new RDb(port, host);
     } else {
       db = new JDb(
-        path.resolve(os.homedir(), ".bot/boby.json"),
+        path.resolve(os.homedir(), ".darwinia/faucet/bot.json"),
         grammer.faucet.config.supply,
       );
     }
@@ -140,46 +130,33 @@ export default class Grammer {
     return new Grammer({account, api, db, grammer});
   }
 
-  static checkMsg(msg: TelegramBot.Message): boolean {
-    if (
-      msg.reply_to_message === undefined ||
-      msg.reply_to_message.from === undefined ||
-      msg.reply_to_message.from.id
-
-    ) {
-      return false;
+  private token(typedToken: string): string {
+    if (!!typedToken) {
+      return typedToken;
     }
-
-    return true;
-  }
-
-  private grammer: IGrammer;
-  private db: BotDb;
-  private api: ApiPromise;
-  private account: KeyringPair;
-
-  constructor(conf: IGrammerConfig) {
-    this.account = conf.account;
-    this.api = conf.api;
-    this.grammer = conf.grammer;
-    this.db = conf.db;
+    if (process.env.TELEGRAM_BOT_TOKEN) {
+      return process.env.TELEGRAM_BOT_TOKEN;
+    }
+    console.error("The telegram-bot token is required.");
+    process.exit(1);
   }
 
   /**
    * serve grammer with specfic key
    *
-   * @param {string} key - telegram bot key
+   * @param {string} token - telegram bot token
    */
-  public async run(key: string) {
+  public async run(token: string) {
     // run locker
     this.locker();
 
     // start bot
-    const bot = new TelegramBot(key, {polling: true});
+    const botToken = this.token(token);
+    const bot = new TelegramBot(botToken, {polling: true});
     bot.on("polling_error", (msg) => console.error(msg));
     bot.onText(/^\/\w+/, async (msg) => {
       if (msg.text === undefined) {
-        return false;
+        return;
       }
 
       const match = msg.text.match(/\/\w+/);
@@ -188,9 +165,13 @@ export default class Grammer {
       }
 
       // reply
+      const replayMsg = await this.reply(bot, msg, match[0].slice(1));
+      if (replayMsg === undefined) {
+        return;
+      }
       const sentMsg = await bot.sendMessage(
         msg.chat.id,
-        await this.reply(bot, msg, match[0].slice(1)),
+        replayMsg,
         {
           reply_to_message_id: msg.message_id,
         }
@@ -199,10 +180,8 @@ export default class Grammer {
       // check if should delete message
       const that = this;
       if (sentMsg.text) {
-        if (sentMsg.text && (
-          sentMsg.text === this.grammer.faucet.only.trim() ||
-          sentMsg.text === this.grammer.faucet.invite.trim()
-        )) {
+        if (sentMsg.text === this.grammer.faucet.only.trim() ||
+          sentMsg.text === this.grammer.faucet.invite.trim()) {
           await this.deleteMsg(bot, msg);
           setTimeout(async () => {
             await that.deleteMsg(bot, sentMsg);
@@ -226,39 +205,34 @@ export default class Grammer {
     }, 1000 * 30);
   }
 
+  private async deleteMsg(bot: TelegramBot, msg: TelegramBot.Message): Promise<void> {
+    await bot.deleteMessage(
+      msg.chat.id, msg.message_id.toString(),
+    ).catch((_: any) => {
+      console.warn(`doesn't have the access for deleting messages`);
+    });
+  }
+
   private async reply(
     bot: TelegramBot,
     msg: TelegramBot.Message,
     cmd: string
-  ): Promise<string> {
+  ): Promise<string | undefined> {
     switch (cmd) {
-      case "book":
-        return this.grammer.book;
-      case "docs":
-        return this.grammer.docs;
-      case "dev":
-        return this.grammer.dev;
-      case "talk":
-        return this.grammer.talk;
-      case "more":
-        return this.grammer.more;
-      case "about":
-        return this.grammer.about;
       case "faucet":
         if (fs.existsSync(LOCKER)) {
           return this.grammer.faucet.failed;
         } else {
           return await this.transfer(bot, msg);
         }
-      default:
-        return this.grammer.help;
     }
   }
 
   /**
    * Transfer some ring wich multi-checks
    *
-   * @param {String} addr - the target address
+   * @param bot telegram bot instance
+   * @param msg message
    */
   private async transfer(bot: TelegramBot, msg: TelegramBot.Message): Promise<string> {
     if (
@@ -269,26 +243,12 @@ export default class Grammer {
       return this.grammer.faucet.invalid;
     }
 
-    // Check if user in channel @DarwiniaFaucet
-    if (msg.chat.id !== -1001364443637) {
-      return this.grammer.faucet.invite;
+    // Get addr
+    const matches = msg.text.match(/\/(\w+)\s+(\S+)/);
+    if (matches === null || matches.length < 3) {
+      return this.grammer.faucet.empty;
     }
-
-    // Check if user in channel @DarwiniaNetwork
-    try {
-      const res = await bot.getChatMember("@DarwiniaNetwork", msg.from.id.toString());
-      const status: string = res.status;
-      if (
-        status !== "creator" &&
-        status !== "member" &&
-        status !== "administrator"
-      ) {
-        return this.grammer.faucet.only;
-      }
-    } catch (e) {
-      console.error(e);
-      return this.grammer.faucet.only;
-    }
+    const addr = matches[2];
 
     // check supply
     const date = new Date().toJSON().slice(0, 10);
@@ -309,26 +269,17 @@ export default class Grammer {
       );
     }
 
-    // Get addr
-    const matches = msg.text.match(/\/(\w+)\s+(\S+)/);
-    if (matches === null || matches.length < 3) {
-      return this.grammer.faucet.empty;
-    }
-
-    const addr = matches[2];
-    console.log(`${new Date()} trying to tansfer to ${addr}`);
+    console.log(`${new Date()} trying to transfer to ${addr}`);
     if (addr.length !== 48) {
       return this.grammer.faucet.length;
-    } else if (!addr.startsWith("5")) {
+    } else if (!addr.startsWith("2")) {
       return this.grammer.faucet.prefix;
-    } else if (!addr.match(/CRAB/g)) {
-      return this.grammer.faucet.address;
     }
 
     // check addr
     const received: boolean = await this.db.hasReceived(addr);
     if (received) {
-      console.trace(`${new Date()}: ${addr} has already reviced the airdrop`)
+      console.trace(`${new Date()}: ${addr} has already received the airdrop`)
       return this.grammer.faucet.received;
     }
 
@@ -358,16 +309,8 @@ export default class Grammer {
       await this.db.burnSupply(date, this.grammer.faucet.config.supply);
       await this.db.lastDrop(msg.from.id, new Date().getTime())
       return this.grammer.faucet.succeed.replace("${hash}", hash);
-    } else {
-      return this.grammer.faucet.failed;
     }
+    return this.grammer.faucet.failed;
   }
 
-  private async deleteMsg(bot: TelegramBot, msg: TelegramBot.Message): Promise<void> {
-    await bot.deleteMessage(
-      msg.chat.id, msg.message_id.toString(),
-    ).catch((_: any) => {
-      console.warn(`doesn't have the access for deleting messages`);
-    });
-  }
 }

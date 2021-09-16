@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import Redis, {Callback, Ok} from "ioredis";
 import BotDb from "./schema";
 
 /// Table

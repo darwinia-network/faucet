@@ -5,6 +5,10 @@
 
 BIN_PATH=$(dirname $(readlink -f $0))
 
-npm run build
+DIST_PATH=${BIN_PATH}/lib
 
-node ${BIN_PATH}/lib/index.js $@
+if [[ ! -d ${DIST_PATH} ]]; then
+  npm run build
+fi
+
+node ${DIST_PATH}/index.js $@
