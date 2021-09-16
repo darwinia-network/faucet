@@ -131,8 +131,9 @@ export default class Grammer {
   }
 
   private token(typedToken: string): string {
-    if (!!typedToken)
+    if (!!typedToken) {
       return typedToken;
+    }
     if (process.env.TELEGRAM_BOT_TOKEN) {
       return process.env.TELEGRAM_BOT_TOKEN;
     }
