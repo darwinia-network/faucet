@@ -35,7 +35,8 @@ export class JDb extends BotDb {
         },
       };
     } else {
-      this._ = JSON.parse(fs.readFileSync(_path).toString());
+      const data = fs.readFileSync(_path).toString();
+      this._ = data ? JSON.parse(data) : {};
     }
 
     this.path = _path;
