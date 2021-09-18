@@ -29,6 +29,6 @@ faucet:
   received: |
     This address has already received the airdrop, I know this.
   config:
-    amount: 10
+    amount: 100
     supply: 500
     interval: 168
