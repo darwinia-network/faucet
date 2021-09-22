@@ -1,4 +1,4 @@
 {
-  "node": "wss://pangolin-rpc.darwinia.network",
+  "node": "https://pangolin-rpc.darwinia.network",
   "seed": ""
 }

@@ -1,7 +1,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import {ApiPromise, WsProvider} from "@polkadot/api";
+import {ApiPromise, HttpProvider} from "@polkadot/api";
 import {Keyring} from "@polkadot/keyring";
 import {KeyringPair} from "@polkadot/keyring/types";
 import {cryptoWaitReady} from "@polkadot/util-crypto";
@@ -91,7 +91,7 @@ export default class Grammer {
     await cryptoWaitReady();
     const config = new Config();
     const api = await ApiPromise.create({
-      provider: new WsProvider(config.node),
+      provider: new HttpProvider(config.node),
       types: config.types,
     });
     const account = new Keyring({
@@ -155,7 +155,6 @@ export default class Grammer {
     const bot = new TelegramBot(botToken, {polling: true});
     bot.on("polling_error", (msg) => console.error(msg));
     bot.onText(/^\/\w+/, async (msg) => {
-      console.trace(`Received new command ${msg.text}`);
       if (msg.text === undefined) {
         return;
       }
