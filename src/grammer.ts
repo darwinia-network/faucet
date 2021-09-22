@@ -155,6 +155,7 @@ export default class Grammer {
     const bot = new TelegramBot(botToken, {polling: true});
     bot.on("polling_error", (msg) => console.error(msg));
     bot.onText(/^\/\w+/, async (msg) => {
+      console.trace(`Received new command ${msg.text}`);
       if (msg.text === undefined) {
         return;
       }
