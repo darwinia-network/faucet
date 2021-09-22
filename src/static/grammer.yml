@@ -11,7 +11,7 @@ faucet:
   prefix: |
     (The secret of generating a lucky address is...wubalubadubdub
   length: |
-    The length of my crab address is 48, what about yours?
+    The length of my pangolin address is 48, what about yours?
   failed: |
     My PRING has run out ;(, would anybody send me some?
   succeed: |
