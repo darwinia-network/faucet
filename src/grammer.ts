@@ -189,7 +189,7 @@ export default class Grammer {
         })
         .catch(e => {
           console.error("Failed to reply message: ", e);
-        })
+        });
 
     });
   }
