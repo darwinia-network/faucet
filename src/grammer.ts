@@ -166,26 +166,30 @@ export default class Grammer {
 
       // reply
       const that = this;
-      this.reply(bot, msg, match[0].slice(1)).then(async replayMsg => {
-        const sentMsg = await bot.sendMessage(
-          msg.chat.id,
-          replayMsg,
-          {
-            reply_to_message_id: msg.message_id,
-          }
-        );
+      this.reply(bot, msg, match[0].slice(1))
+        .then(async replayMsg => {
+          const sentMsg = await bot.sendMessage(
+            msg.chat.id,
+            replayMsg,
+            {
+              reply_to_message_id: msg.message_id,
+            }
+          );
 
-        // check if should delete message
-        if (sentMsg.text) {
-          if (sentMsg.text === this.grammer.faucet.only.trim() ||
-            sentMsg.text === this.grammer.faucet.invite.trim()) {
-            await this.deleteMsg(bot, msg);
-            setTimeout(async () => {
-              await that.deleteMsg(bot, sentMsg);
-            }, 30000);
+          // check if should delete message
+          if (sentMsg.text) {
+            if (sentMsg.text === this.grammer.faucet.only.trim() ||
+              sentMsg.text === this.grammer.faucet.invite.trim()) {
+              await this.deleteMsg(bot, msg);
+              setTimeout(async () => {
+                await that.deleteMsg(bot, sentMsg);
+              }, 30000);
+            }
           }
-        }
-      });
+        })
+        .catch(e => {
+          console.error("Failed to reply message: ", e);
+        })
 
     });
   }
