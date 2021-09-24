@@ -168,6 +168,9 @@ export default class Grammer {
       const that = this;
       this.reply(bot, msg, match[0].slice(1))
         .then(async replayMsg => {
+          if (replayMsg === undefined) {
+            return;
+          }
           const sentMsg = await bot.sendMessage(
             msg.chat.id,
             replayMsg,
