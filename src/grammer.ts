@@ -165,29 +165,28 @@ export default class Grammer {
       }
 
       // reply
-      const replayMsg = await this.reply(bot, msg, match[0].slice(1));
-      if (replayMsg === undefined) {
-        return;
-      }
-      const sentMsg = await bot.sendMessage(
-        msg.chat.id,
-        replayMsg,
-        {
-          reply_to_message_id: msg.message_id,
-        }
-      )
-
-      // check if should delete message
       const that = this;
-      if (sentMsg.text) {
-        if (sentMsg.text === this.grammer.faucet.only.trim() ||
-          sentMsg.text === this.grammer.faucet.invite.trim()) {
-          await this.deleteMsg(bot, msg);
-          setTimeout(async () => {
-            await that.deleteMsg(bot, sentMsg);
-          }, 30000);
+      this.reply(bot, msg, match[0].slice(1)).then(async replayMsg => {
+        const sentMsg = await bot.sendMessage(
+          msg.chat.id,
+          replayMsg,
+          {
+            reply_to_message_id: msg.message_id,
+          }
+        );
+
+        // check if should delete message
+        if (sentMsg.text) {
+          if (sentMsg.text === this.grammer.faucet.only.trim() ||
+            sentMsg.text === this.grammer.faucet.invite.trim()) {
+            await this.deleteMsg(bot, msg);
+            setTimeout(async () => {
+              await that.deleteMsg(bot, sentMsg);
+            }, 30000);
+          }
         }
-      }
+      });
+
     });
   }
 
