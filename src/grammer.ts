@@ -282,12 +282,13 @@ export default class Grammer {
       return this.grammer.faucet.prefix;
     }
 
-    // check addr
-    const received: boolean = await this.db.hasReceived(addr);
-    if (received) {
-      console.trace(`${new Date()}: ${addr} has already received the airdrop`)
-      return this.grammer.faucet.received;
-    }
+    /// allow receive multiple times
+    // // check addr
+    // const received: boolean = await this.db.hasReceived(addr);
+    // if (received) {
+    //   console.trace(`${new Date()}: ${addr} has already received the airdrop`)
+    //   return this.grammer.faucet.received;
+    // }
 
     // transfer to address
     bot.sendMessage(
