@@ -278,7 +278,7 @@ export default class Grammer {
     console.log(`${new Date()} trying to transfer to ${addr}`);
     if (addr.length !== 48) {
       return this.grammer.faucet.length;
-    } else if (!addr.startsWith("2")) {
+    } else if (!addr.startsWith("5")) {
       return this.grammer.faucet.prefix;
     }
 
