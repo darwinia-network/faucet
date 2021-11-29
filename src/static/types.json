@@ -164,24 +164,13 @@
     "ethash_proof": "Vec<EthashProof>",
     "mmr_proof": "Vec<H256>"
   },
-  "TokenOption": {
-    "name": "Vec<u32>",
-    "symbol": "Vec<u32>",
+  "TokenMetadata": {
+    "token_type": "u32",
+    "address": "H160",
+    "name": "Vec<u8>",
+    "symbol": "Vec<u8>",
     "decimal": "u8"
   },
-  "TokenInfo": {
-    "address": "H160",
-    "value": "Option<U256>",
-    "option": "Option<TokenOption>"
-  },
-  "Token": {
-    "_enum": {
-      "InvalidToken": "u8",
-      "Native": "TokenInfo",
-      "Erc20": "TokenInfo"
-    }
-  },
-  "TokenMessageId": "[u8; 16; TokenMessageId]",
   "__[TODO.Generalize]__": "",
   "RelayAuthoritySigner": "EthereumAddress",
   "RelayAuthorityMessage": "EcdsaMessage",
@@ -199,6 +188,25 @@
       "Eth": "[u8; 20; EthereumAddress]",
       "Tron": "[u8; 20; TronAddress]"
     }
+  },
+  "__[pallet.fee_market]__": null,
+  "Relayer": {
+    "id": "AccountId",
+    "collateral": "Balance",
+    "fee": "Balance"
+  },
+  "Order": {
+    "lane": "LaneId",
+    "message": "MessageNonce",
+    "sent_time": "BlockNumber",
+    "confirm_time": "BlockNumber",
+    "locked_collateral": "Balance",
+    "assigned_relayers": "Vec<PriorRelayer>"
+  },
+  "PriorRelayer": {
+    "id": "AccountId",
+    "fee": "Balance",
+    "valid_range": "BlockNumber"
   },
   "AddressT": "[u8; 20; AddressT]",
   "__[pallet.header-mmr]__": null,
@@ -241,7 +249,7 @@
   },
   "MmrRootToSign": {
     "mmr_root": "Hash",
-    "signatures": "Vec<(EthereumAddress, EcdsaSignature)>"
+    "signatures": "Vec<(AccountId, EcdsaSignature)>"
   },
   "MMRRoot": "Hash",
   "__[primitives.bsc]__": null,
@@ -262,34 +270,6 @@
     "mix_digest": "H256",
     "nonce": "Bytes"
   },
-  "__[pallet.fee_market]__": null,
-  "Relayer": {
-    "id": "AccountId",
-    "collateral": "Balance",
-    "fee": "Balance"
-  },
-  "Fee": "Balance",
-  "Order": {
-    "lane": "LaneId",
-    "message": "MessageNonce",
-    "sent_time": "BlockNumber",
-    "confirm_time": "BlockNumber",
-    "assigned_relayers": "Vec<PriorRelayer>"
-  },
-  "PriorRelayer": {
-    "id": "AccountId",
-    "priority": "Priority",
-    "fee": "Balance",
-    "valid_range": "BlockNumber"
-  },
-  "Priority": {
-    "_enum": {
-      "NoPriority": "null",
-      "P1": "null",
-      "P2": "null",
-      "P3": "null"
-    }
-  },
   "__[pangolin.runtime]__": {
     "ProxyType": {
       "_enum": {
@@ -308,6 +288,7 @@
   "StakingRuntimeDispatchInfo": {
     "power": "Power"
   },
-  "__[might be removed later]__": null,
-  "SpecVersion": "u32"
+  "InProcessOrders": {
+    "orders": "Vec<LaneId, MessageNonce>"
+  }
 }
