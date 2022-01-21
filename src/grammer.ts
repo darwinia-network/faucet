@@ -10,6 +10,8 @@ import TelegramBot from "node-telegram-bot-api"
 import {Config} from "./config";
 import {BotDb, JDb, RDb} from "./db";
 
+import '@polkadot/api-augment';
+
 /**
  * Constants
  */
@@ -92,7 +94,7 @@ export default class Grammer {
     const config = new Config();
     const api = await ApiPromise.create({
       provider: new HttpProvider(config.node),
-      types: config.types,
+      // types: config.types,
     });
     const account = new Keyring({
       type: "sr25519",
