@@ -40,7 +40,7 @@ export class Config {
 
   public node: string;
   public path: string;
-  public types: Record<string, any>;
+  // public types: Record<string, any>;
   private seed: string;
 
   constructor() {

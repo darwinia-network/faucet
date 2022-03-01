@@ -48,6 +48,6 @@
     "build": "tsc --strict && rm -rf lib/src/static && cp -r src/static lib/src/static",
     "lint": "tsc --noEmit --strict && tslint --project tsconfig.json",
     "test": "jest --forceExit --detectOpenHandles",
-    "package": "ncc build --source-map"
+    "package": "ncc build --source-map && rm -rf dist/static && cp -r src/static dist/static"
   }
 }
