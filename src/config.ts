@@ -4,7 +4,6 @@ import os from "os";
 import path from "path";
 import prompts from "prompts";
 import rawCj from "./static/config.json";
-import rawTj from "./static/types.json";
 
 export interface IConfig {
   node: string;
@@ -48,7 +47,7 @@ export class Config {
     const home = os.homedir();
     const root = path.resolve(home, ".darwinia/faucet");
     const conf = path.resolve(root, "config.json");
-    const types = path.resolve(root, "types.json");
+    // const types = path.resolve(root, "types.json");
 
     // Init pathes
     this.path = conf;
@@ -58,7 +57,7 @@ export class Config {
       fs.mkdirSync(root, {recursive: true});
     }
 
-    this.types = Config.load(types, rawTj);
+    // this.types = Config.load(types, rawTj);
     const cj = Config.load(conf, rawCj);
     this.node = cj.node;
     this.seed = process.env.DACTLE_SEED ? process.env.DACTLE_SEED : cj.seed;

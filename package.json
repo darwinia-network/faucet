@@ -37,15 +37,17 @@
     "@types/node-telegram-bot-api": "^0.51.4",
     "@types/prompts": "^2.0.9",
     "@types/yargs": "^17.0.2",
+    "@vercel/ncc": "^0.33.3",
     "husky": "^7.0.2",
-    "ts-jest": "^27.0.5",
     "jest": "^27.1.1",
+    "ts-jest": "^27.0.5",
     "tslint": "^6.1.3",
     "typescript": "^4.4.2"
   },
   "scripts": {
     "build": "tsc --strict && rm -rf lib/src/static && cp -r src/static lib/src/static",
     "lint": "tsc --noEmit --strict && tslint --project tsconfig.json",
-    "test": "jest --forceExit --detectOpenHandles"
+    "test": "jest --forceExit --detectOpenHandles",
+    "package": "ncc build --source-map"
   }
 }
