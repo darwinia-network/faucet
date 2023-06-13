@@ -13,3 +13,23 @@ repository    = "https://github.com/darwinia-network/bridger"
 version       = "0.1.0"
 
 [dependencies]
+
+tracing    = "0.1"
+color-eyre = "0.6"
+sentry     = "0.31"
+
+actix-web          = "4"
+actix-cors         = "0.6"
+actix-web-lab      = "0.19"
+actix-governor     = "0.4"
+
+strawberry-state       = { git = "https://gitlab.com/repotea-workspace/pattery", branch = "enhance" }
+strawberry-config      = { git = "https://gitlab.com/repotea-workspace/pattery", branch = "enhance" }
+strawberry-common      = { git = "https://gitlab.com/repotea-workspace/pattery", branch = "enhance" }
+strawberry-initializer = { git = "https://gitlab.com/repotea-workspace/pattery", branch = "enhance" }
+strawberry-actix-web   = { git = "https://gitlab.com/repotea-workspace/pattery", branch = "enhance" }
+
+
+[features]
+default = []
+debug   = []
