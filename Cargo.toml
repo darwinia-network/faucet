@@ -17,13 +17,13 @@ version       = "0.1.0"
 tracing    = "0.1"
 color-eyre = "0.6"
 sentry     = "0.31"
+serde      = { version = "1", features = ["derive"] }
 
 actix-web          = "4"
 actix-cors         = "0.6"
 actix-web-lab      = "0.19"
 actix-governor     = "0.4"
 
-strawberry-state       = { git = "https://gitlab.com/repotea-workspace/pattery", branch = "enhance" }
 strawberry-config      = { git = "https://gitlab.com/repotea-workspace/pattery", branch = "enhance" }
 strawberry-common      = { git = "https://gitlab.com/repotea-workspace/pattery", branch = "enhance" }
 strawberry-initializer = { git = "https://gitlab.com/repotea-workspace/pattery", branch = "enhance" }

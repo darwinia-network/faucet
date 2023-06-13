@@ -9,6 +9,7 @@ impl FaucetRouter {
   pub fn router(cfg: &mut web::ServiceConfig) {
     Self::middleware_generic(cfg);
     Self::route_generic(cfg);
+    Self::route_v1(cfg);
   }
 }
 
@@ -19,4 +20,16 @@ impl FaucetRouter {
   }
 
   fn middleware_generic(_cfg: &mut web::ServiceConfig) {}
+}
+
+impl FaucetRouter {
+  fn route_v1(cfg: &mut web::ServiceConfig) {
+    let scope_v1 = web::scope("/api/v1");
+    let scope_v1_route = scope_v1
+      .route("/hello", web::get().to(route::generic::index))
+      .route("/faucet/receive", web::get().to(route::v1::faucet::receive))
+      // just segment
+      ;
+    cfg.service(scope_v1_route);
+  }
 }

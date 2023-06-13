@@ -5,16 +5,19 @@ use actix_web::middleware::ErrorHandlers;
 use actix_web::{App, HttpServer};
 use strawberry_common::envh;
 use strawberry_common::types::RunningMode;
-use strawberry_config::types::StrawberryConfig;
-use strawberry_initializer::AppInitializer;
-use strawberry_state::state::AppStateBuilder;
 
+use crate::initializer::FaucetInitializer;
 use crate::router::FaucetRouter;
+use crate::state::AppStateBuilder;
+use crate::types::config::FaucetConfig;
 
 mod enhance;
 mod external;
+mod initializer;
 mod route;
 mod router;
+mod state;
+mod types;
 
 /// Start a server and use a `Router` to dispatch requests
 #[actix_web::main]
@@ -29,13 +32,13 @@ async fn main() -> color_eyre::Result<()> {
 }
 
 /// init app
-async fn init_app() -> color_eyre::Result<StrawberryConfig> {
-  Ok(AppInitializer.init()?)
+async fn init_app() -> color_eyre::Result<FaucetConfig> {
+  Ok(FaucetInitializer.init()?)
 }
 
 /// init sentry
-async fn init_sentry(config: &StrawberryConfig) -> color_eyre::Result<()> {
-  let sentry_config = config.sentry.clone();
+async fn init_sentry(config: &FaucetConfig) -> color_eyre::Result<()> {
+  let sentry_config = config.strawberry.sentry.clone();
   if sentry_config.is_none() {
     return Ok(());
   }
@@ -55,8 +58,8 @@ async fn init_sentry(config: &StrawberryConfig) -> color_eyre::Result<()> {
 }
 
 /// start web server
-async fn start_server(config: StrawberryConfig) -> color_eyre::Result<()> {
-  let server_config = &config.server;
+async fn start_server(config: FaucetConfig) -> color_eyre::Result<()> {
+  let server_config = &config.strawberry.server;
   let (host, port) = (server_config.host.clone(), server_config.port);
   tracing::info!(
     target: "beetle",
@@ -64,7 +67,7 @@ async fn start_server(config: StrawberryConfig) -> color_eyre::Result<()> {
     &host,
     port,
   );
-  let app_data = AppStateBuilder::new(config).app_state().await?;
+  let app_data = AppStateBuilder::new(config).app_state().await;
 
   // Allow bursts with up to five requests per IP address
   // and replenishes one element every two seconds
