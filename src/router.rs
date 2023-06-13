@@ -27,7 +27,7 @@ impl FaucetRouter {
     let scope_v1 = web::scope("/api/v1");
     let scope_v1_route = scope_v1
       .route("/hello", web::get().to(route::generic::index))
-      .route("/faucet/receive", web::get().to(route::v1::faucet::receive))
+      .route("/faucet/receive", web::post().to(route::v1::faucet::receive))
       // just segment
       ;
     cfg.service(scope_v1_route);

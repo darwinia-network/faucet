@@ -12,10 +12,12 @@ use crate::state::AppStateBuilder;
 use crate::types::config::FaucetConfig;
 
 mod enhance;
+mod errors;
 mod external;
 mod initializer;
 mod route;
 mod router;
+mod services;
 mod state;
 mod types;
 

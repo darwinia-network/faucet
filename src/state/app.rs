@@ -4,7 +4,9 @@ use crate::types::config::FaucetConfig;
 
 pub type AppState = web::Data<FaucetState>;
 
-pub struct FaucetState;
+pub struct FaucetState {
+  pub config: FaucetConfig,
+}
 
 impl FaucetState {
   /// Create app state
@@ -29,7 +31,9 @@ impl AppStateBuilder {
 impl AppStateBuilder {
   /// get app state
   pub async fn app_state(&self) -> AppState {
-    let state = FaucetState {};
+    let state = FaucetState {
+      config: self.config.clone(),
+    };
     state.app_state()
   }
 }
