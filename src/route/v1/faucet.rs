@@ -13,6 +13,6 @@ pub async fn receive(
 ) -> actix_web::Result<impl Responder> {
   let config = &state.config;
   let form = data.0;
-  let data = FaucetService::receive(form).await?;
+  let data = FaucetService::receive(state, form).await?;
   Ok(web::Json(Resp::ok_with_data(data)))
 }

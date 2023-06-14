@@ -14,12 +14,14 @@ version       = "0.1.0"
 
 [dependencies]
 
-tracing    = "0.1"
-color-eyre = "0.6"
-sentry     = "0.31"
-serde      = { version = "1", features = ["derive"] }
-ethers     = "2.0"
-thiserror  = "1"
+tracing     = "0.1"
+color-eyre  = "0.6"
+sentry      = "0.31"
+serde       = { version = "1", features = ["derive"] }
+serde_json  = "1"
+ethers      = "2.0"
+thiserror   = "1"
+array-bytes = "6"
 
 actix-web          = "4"
 actix-cors         = "0.6"
